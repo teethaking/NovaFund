@@ -1,4 +1,8 @@
+"use client";
+
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { formatCurrency, formatNumber } from "@/lib/formatters";
 
 interface PortfolioData {
   totalInvested: number;
@@ -12,38 +16,51 @@ interface PortfolioStatsProps {
 }
 
 const PortfolioStats: React.FC<PortfolioStatsProps> = ({ data }) => {
+  const { t, i18n } = useTranslation();
   const totalGains = data.totalCurrentValue - data.totalInvested;
   const totalGainsPercentage =
-    data.totalInvested > 0
-      ? ((totalGains / data.totalInvested) * 100).toFixed(1)
-      : "0.0";
+    data.totalInvested > 0 ? (totalGains / data.totalInvested) * 100 : 0;
+  const language = i18n.resolvedLanguage;
+  const formattedGainPercentage = formatNumber(
+    Math.abs(totalGainsPercentage),
+    language,
+    {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    },
+  );
 
   const stats = [
     {
-      title: "Total Invested",
-      value: `$${data.totalInvested.toLocaleString()}`,
-      description: "Across all projects",
+      title: t("dashboard.stats.totalInvested"),
+      value: formatCurrency(data.totalInvested, language),
+      description: t("dashboard.stats.acrossAllProjects"),
       color: "text-blue-400",
       bgColor: "bg-blue-900/20",
     },
     {
-      title: "Current Value",
-      value: `$${data.totalCurrentValue.toLocaleString()}`,
-      description: `${totalGainsPercentage}% ${totalGains >= 0 ? "gain" : "loss"}`,
+      title: t("dashboard.stats.currentValue"),
+      value: formatCurrency(data.totalCurrentValue, language),
+      description: t(
+        totalGains >= 0
+          ? "dashboard.stats.gainDescription"
+          : "dashboard.stats.lossDescription",
+        { percent: formattedGainPercentage },
+      ),
       color: totalGains >= 0 ? "text-green-400" : "text-red-400",
       bgColor: totalGains >= 0 ? "bg-green-900/20" : "bg-red-900/20",
     },
     {
-      title: "Claimable Returns",
-      value: `$${data.totalClaimableReturns.toLocaleString()}`,
-      description: "Ready to claim",
+      title: t("dashboard.stats.claimableReturns"),
+      value: formatCurrency(data.totalClaimableReturns, language),
+      description: t("dashboard.stats.readyToClaim"),
       color: "text-purple-400",
       bgColor: "bg-purple-900/20",
     },
     {
-      title: "Active Projects",
-      value: data.totalProjects.toString(),
-      description: "In portfolio",
+      title: t("dashboard.stats.activeProjects"),
+      value: formatNumber(data.totalProjects, language),
+      description: t("dashboard.stats.inPortfolio"),
       color: "text-orange-400",
       bgColor: "bg-orange-900/20",
     },
@@ -52,15 +69,18 @@ const PortfolioStats: React.FC<PortfolioStatsProps> = ({ data }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, index) => (
-        <div key={index} className={`relative overflow-hidden rounded-2xl p-6 ${stat.bgColor} border border-white/10 backdrop-blur-xl shadow-lg`}>
+        <div
+          key={stat.title}
+          className={`relative overflow-hidden rounded-2xl p-6 ${stat.bgColor} border border-white/10 backdrop-blur-xl shadow-lg`}
+        >
           <div className="absolute inset-x-0 -top-px h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           <div className="flex items-center justify-between relative z-10">
             <div>
               <p className="text-sm text-white/60 mb-1">{stat.title}</p>
-              <p className={`text-3xl font-extrabold ${stat.color} drop-shadow-sm`}>{stat.value}</p>
-              <p className="text-xs text-white/40 mt-1">
-                {stat.description}
+              <p className={`text-3xl font-extrabold ${stat.color} drop-shadow-sm`}>
+                {stat.value}
               </p>
+              <p className="text-xs text-white/40 mt-1">{stat.description}</p>
             </div>
             <div
               className={`w-12 h-12 rounded-full ${stat.bgColor} flex items-center justify-center`}

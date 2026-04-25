@@ -4,14 +4,23 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Clock, Users, Sparkles, Code, Palette, Leaf } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { LikeButton } from "@/components/social/LikeButton";
 import { ShareButton } from "@/components/social/ShareButton";
 import { SocialStats } from "@/components/social/SocialStats";
 import { subscribeToFundingUpdates } from "@/lib/funding-stream-client";
+import { formatCurrency, formatNumber } from "@/lib/formatters";
 import Image from "next/image";
 
 const BLUR_DATA_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOMjY39zwAEhQJnxZ6A3QAAAABJRU5ErkJggg==";
+
+const CATEGORY_TRANSLATION_KEYS = {
+  Tech: "common.projectCategories.tech",
+  Art: "common.projectCategories.art",
+  "Green Energy": "common.projectCategories.greenEnergy",
+  UX: "common.projectCategories.ux",
+} as const;
 
 export interface Project {
   id: string;
@@ -60,12 +69,13 @@ function getProgressPercentage(raised: number, goal: number): number {
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+  const { t, i18n } = useTranslation();
   const projectId = project.id;
   const goal = getNonNegativeNumber(project.goal);
   const initialRaised = project.raised;
   const initialBackers = project.backers;
   const [fundingState, setFundingState] = React.useState<FundingState>(() =>
-    createFundingState(initialRaised, initialBackers)
+    createFundingState(initialRaised, initialBackers),
   );
 
   React.useEffect(() => {
@@ -78,10 +88,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
       setFundingState((current) => {
         const nextRaised = getNonNegativeNumber(
-          update.raised ?? current.raised + (update.amount ?? 0)
+          update.raised ?? current.raised + (update.amount ?? 0),
         );
         const nextBackers =
-          update.backers !== undefined ? getBackerCount(update.backers) : current.backers;
+          update.backers !== undefined
+            ? getBackerCount(update.backers)
+            : current.backers;
 
         if (nextRaised === current.raised && nextBackers === current.backers) {
           return current;
@@ -96,33 +108,30 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   }, [projectId]);
 
   const progress = getProgressPercentage(fundingState.raised, goal);
+  const language = i18n.resolvedLanguage;
 
   const categoryStyles = {
     Tech: {
       gradient: "from-blue-600/40 via-blue-500/20 to-cyan-500/10",
       color: "text-blue-400",
-      border: "border-blue-500/30",
       badge: "bg-blue-500/10 text-blue-300 border-blue-500/20",
       icon: Code,
     },
     Art: {
       gradient: "from-purple-600/40 via-pink-500/20 to-purple-500/10",
       color: "text-purple-400",
-      border: "border-purple-500/30",
       badge: "bg-purple-500/10 text-purple-300 border-purple-500/20",
       icon: Palette,
     },
     "Green Energy": {
       gradient: "from-emerald-600/40 via-green-500/20 to-teal-500/10",
       color: "text-emerald-400",
-      border: "border-emerald-500/30",
       badge: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
       icon: Leaf,
     },
     UX: {
       gradient: "from-orange-600/40 via-amber-500/20 to-orange-500/10",
       color: "text-orange-400",
-      border: "border-orange-500/30",
       badge: "bg-orange-500/10 text-orange-300 border-orange-500/20",
       icon: Sparkles,
     },
@@ -130,6 +139,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
   const style = categoryStyles[project.category];
   const IconComponent = style.icon;
+  const categoryLabel = t(CATEGORY_TRANSLATION_KEYS[project.category]);
 
   return (
     <Link href={`/project/${projectId}`} className="block">
@@ -143,7 +153,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         <div
           className={cn(
             "relative aspect-video w-full overflow-hidden bg-gradient-to-br transition-transform duration-500 group-hover:scale-105 flex items-center justify-center",
-            style.gradient
+            style.gradient,
           )}
         >
           {project.imageUrl && (
@@ -171,11 +181,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             <span
               className={cn(
                 "px-3 py-1.5 rounded-full text-xs font-semibold border backdrop-blur-md inline-flex items-center gap-1.5",
-                style.badge
+                style.badge,
               )}
             >
               <IconComponent className="h-3 w-3" />
-              {project.category}
+              {categoryLabel}
             </span>
           </div>
         </div>
@@ -192,10 +202,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="font-medium text-white">
-                  ${fundingState.raised.toLocaleString()}
+                  {formatCurrency(fundingState.raised, language)}
                 </span>
                 <span className="text-white/40">
-                  {Math.round(progress)}% of ${goal.toLocaleString()}
+                  {t("projectCard.progressOf", {
+                    percent: formatNumber(Math.round(progress), language),
+                    goal: formatCurrency(goal, language),
+                  })}
                 </span>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
@@ -211,11 +224,21 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             <div className="flex items-center justify-between border-t border-white/5 pt-4 text-sm text-white/40">
               <div className="flex items-center gap-1.5">
                 <Users className="h-4 w-4" />
-                <span>{fundingState.backers} backers</span>
+                <span>
+                  {t("projectCard.backers", {
+                    count: fundingState.backers,
+                    formattedCount: formatNumber(fundingState.backers, language),
+                  })}
+                </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
-                <span>{project.daysLeft}d left</span>
+                <span>
+                  {t("projectCard.daysLeft", {
+                    count: project.daysLeft,
+                    formattedCount: formatNumber(project.daysLeft, language),
+                  })}
+                </span>
               </div>
             </div>
 

@@ -1,15 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { formatCurrency } from "@/lib/formatters";
 import Button from "@/components/ui/Button";
 import InvestmentTable from "@/components/InvestmentTable";
 import PortfolioStats from "@/components/PortfolioStats";
 import PortfolioChart from "@/components/PortfolioChart";
 import LoadingDashboard from "@/components/LoadingDashboard";
 
+interface InvestmentRecord {
+  id: string;
+  projectNameKey: string;
+  amount: number;
+  dateInvested: string;
+  status: "active" | "completed" | "failed";
+  currentValue: number;
+  claimableReturns: number;
+  canClaim: boolean;
+}
 
-// Mock data types
-interface Investment {
+interface LocalizedInvestment {
   id: string;
   projectName: string;
   amount: number;
@@ -25,10 +36,9 @@ interface PortfolioData {
   totalCurrentValue: number;
   totalClaimableReturns: number;
   totalProjects: number;
-  investments: Investment[];
+  investments: InvestmentRecord[];
 }
 
-// Mock data
 const mockPortfolioData: PortfolioData = {
   totalInvested: 15000,
   totalCurrentValue: 18500,
@@ -37,7 +47,7 @@ const mockPortfolioData: PortfolioData = {
   investments: [
     {
       id: "1",
-      projectName: "Solar Panel Initiative",
+      projectNameKey: "dashboard.projects.solarPanelInitiative",
       amount: 5000,
       dateInvested: "2024-01-15",
       status: "active",
@@ -47,7 +57,7 @@ const mockPortfolioData: PortfolioData = {
     },
     {
       id: "2",
-      projectName: "Urban Farming Project",
+      projectNameKey: "dashboard.projects.urbanFarmingProject",
       amount: 3000,
       dateInvested: "2024-02-20",
       status: "active",
@@ -57,7 +67,7 @@ const mockPortfolioData: PortfolioData = {
     },
     {
       id: "3",
-      projectName: "Clean Water Access",
+      projectNameKey: "dashboard.projects.cleanWaterAccess",
       amount: 2500,
       dateInvested: "2024-03-10",
       status: "active",
@@ -67,7 +77,7 @@ const mockPortfolioData: PortfolioData = {
     },
     {
       id: "4",
-      projectName: "Education Technology",
+      projectNameKey: "dashboard.projects.educationTechnology",
       amount: 4500,
       dateInvested: "2024-01-05",
       status: "completed",
@@ -79,13 +89,14 @@ const mockPortfolioData: PortfolioData = {
 };
 
 export default function DashboardPage() {
+  const { t, i18n } = useTranslation();
   const [portfolioData, setPortfolioData] =
     useState<PortfolioData>(mockPortfolioData);
   const [isLoading, setIsLoading] = useState(true);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const language = i18n.resolvedLanguage;
 
-  // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -93,12 +104,21 @@ export default function DashboardPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  const localizedInvestments = useMemo<LocalizedInvestment[]>(
+    () =>
+      portfolioData.investments.map(({ projectNameKey, ...investment }) => ({
+        ...investment,
+        projectName: t(projectNameKey),
+      })),
+    [portfolioData.investments, t],
+  );
+
   const handleClaim = async (investmentId: string, amount: number) => {
+    const formattedAmount = formatCurrency(amount, language);
+
     try {
-      // Mock claim process
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Update portfolio data
       setPortfolioData((prev) => ({
         ...prev,
         investments: prev.investments.map((inv) =>
@@ -109,27 +129,29 @@ export default function DashboardPage() {
         totalClaimableReturns: prev.totalClaimableReturns - amount,
       }));
 
-      // Show success toast
-      setToastMessage(`Successfully claimed $${amount.toLocaleString()}!`);
+      setToastMessage(
+        t("dashboard.toasts.claimSuccess", { amount: formattedAmount }),
+      );
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      // Emit real-time notification (notification center + other tabs)
+
       try {
         await fetch("/api/notifications/emit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             type: "contribution_confirmation",
-            title: "Returns claimed",
-            message: `Successfully claimed $${amount.toLocaleString()} from your investment.`,
+            title: t("dashboard.notifications.returnsClaimedTitle"),
+            message: t("dashboard.notifications.returnsClaimedMessage", {
+              amount: formattedAmount,
+            }),
             link: "/dashboard",
           }),
         });
       } catch {
-        // ignore
       }
-    } catch (error) {
-      setToastMessage("Failed to claim returns. Please try again.");
+    } catch {
+      setToastMessage(t("dashboard.toasts.claimError"));
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     }
@@ -143,11 +165,9 @@ export default function DashboardPage() {
 
   return (
     <div className="relative min-h-screen bg-[#050505] text-foreground overflow-hidden">
-      {/* Subtle background glows */}
       <div className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-[100%] bg-primary/20 opacity-40 blur-[120px]" />
       <div className="pointer-events-none absolute right-0 top-1/4 h-[400px] w-[400px] -translate-y-1/2 rounded-[100%] bg-purple-600/10 opacity-30 blur-[100px]" />
 
-      {/* Toast Notification */}
       {showToast && (
         <div className="fixed top-20 right-4 z-50 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl shadow-lg animate-fade-in backdrop-blur-sm border border-white/20">
           {toastMessage}
@@ -161,13 +181,16 @@ export default function DashboardPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            Investor Dashboard
+            {t("dashboard.badge")}
           </div>
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-6xl mb-4">
-            <span className="bg-gradient-to-r from-primary via-blue-400 to-purple-500 bg-clip-text text-transparent">Portfolio</span> Overview
+            <span className="bg-gradient-to-r from-primary via-blue-400 to-purple-500 bg-clip-text text-transparent">
+              {t("dashboard.titlePrimary")}
+            </span>{" "}
+            {t("dashboard.titleSecondary")}
           </h1>
           <p className="text-white/50 font-light leading-relaxed max-w-2xl text-lg">
-            Track your investments, monitor returns, and manage your portfolio with real-time insights.
+            {t("dashboard.description")}
           </p>
         </div>
 
@@ -177,7 +200,7 @@ export default function DashboardPage() {
               onClick={() => (window.location.href = "/explore")}
               className="rounded-full border border-primary/50 bg-primary/10 px-8 py-3 text-sm font-medium text-primary transition-all hover:bg-primary hover:text-black hover:shadow-[0_0_20px_rgba(var(--primary),0.5)]"
             >
-              Explore More Projects
+              {t("dashboard.exploreMoreProjects")}
             </Button>
           )}
         </div>
@@ -186,40 +209,50 @@ export default function DashboardPage() {
           <>
             <PortfolioStats data={portfolioData} />
 
-            {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12 mb-20">
-              {/* Investment Table */}
               <div className="lg:col-span-2 relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/60 p-6 sm:p-8 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
                 <div className="absolute inset-x-0 -top-px h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                 <InvestmentTable
-                  investments={portfolioData.investments}
+                  investments={localizedInvestments}
                   onClaim={handleClaim}
                 />
               </div>
 
-              {/* Portfolio Chart */}
               <div className="lg:col-span-1 relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/60 p-6 sm:p-8 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
                 <div className="absolute inset-x-0 -top-px h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                <PortfolioChart investments={portfolioData.investments} />
+                <PortfolioChart investments={localizedInvestments} />
               </div>
             </div>
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-32 text-center rounded-3xl border border-white/5 bg-white/[0.01]">
             <div className="rounded-full border border-white/10 bg-zinc-900/50 p-6 mb-6 shadow-xl backdrop-blur-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 text-zinc-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
-            <h3 className="text-3xl font-light tracking-tight text-white">No Investments Yet</h3>
+            <h3 className="text-3xl font-light tracking-tight text-white">
+              {t("dashboard.emptyState.title")}
+            </h3>
             <p className="mt-3 text-zinc-500 max-w-sm mx-auto mb-8">
-              Start building your portfolio by exploring and investing in impactful projects.
+              {t("dashboard.emptyState.body")}
             </p>
             <Button
               onClick={() => (window.location.href = "/explore")}
               className="rounded-full border border-primary bg-primary px-8 py-3 text-sm font-medium text-black transition-all hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(var(--primary),0.5)]"
             >
-              Explore Projects
+              {t("dashboard.emptyState.button")}
             </Button>
           </div>
         )}
