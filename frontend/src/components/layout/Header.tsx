@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, User, ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../ui";
 import { NotificationCenter } from "../notifications/NotificationCenter";
 import { useSocial } from "@/contexts/SocialContext";
@@ -14,10 +15,16 @@ const Header: React.FC = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { currentWallet } = useSocial();
+  const { t } = useTranslation();
 
-  const isActive = (path: string) => {
-    return pathname === path;
-  };
+  const navItems = [
+    { href: "/explore", label: t("common.nav.explore") },
+    { href: "/bridge", label: t("common.nav.bridge") },
+    { href: "/create", label: t("common.nav.create") },
+    { href: "/dashboard", label: t("common.nav.dashboard") },
+  ];
+
+  const isActive = (path: string) => pathname === path;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -32,6 +39,7 @@ const Header: React.FC = () => {
         setIsUserMenuOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -46,48 +54,20 @@ const Header: React.FC = () => {
           NovaFund
         </Link>
 
-        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link
-            href="/explore"
-            className={`text-sm font-medium transition-colors ${
-              isActive("/explore")
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Explore
-          </Link>
-          <Link
-            href="/bridge"
-            className={`text-sm font-medium transition-colors ${
-              isActive("/bridge")
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Bridge
-          </Link>
-          <Link
-            href="/create"
-            className={`text-sm font-medium transition-colors ${
-              isActive("/create")
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Create
-          </Link>
-          <Link
-            href="/dashboard"
-            className={`text-sm font-medium transition-colors ${
-              isActive("/dashboard")
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Dashboard
-          </Link>
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`text-sm font-medium transition-colors ${
+                isActive(item.href)
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
           <NotificationCenter />
           <div ref={userMenuRef} className="relative">
             <button
@@ -112,81 +92,49 @@ const Header: React.FC = () => {
                   onClick={() => setIsUserMenuOpen(false)}
                   className="flex w-full px-4 py-3 text-left text-sm text-white/60 transition-colors hover:bg-white/5 hover:text-white"
                 >
-                  My Profile
+                  {t("common.nav.myProfile")}
                 </Link>
                 <Link
                   href="/dashboard"
                   onClick={() => setIsUserMenuOpen(false)}
                   className="flex w-full px-4 py-3 text-left text-sm text-white/60 transition-colors hover:bg-white/5 hover:text-white"
                 >
-                  Dashboard
+                  {t("common.nav.dashboard")}
                 </Link>
               </div>
             )}
           </div>
           <Button variant="primary" size="md">
-            Connect Wallet
+            {t("common.actions.connectWallet")}
           </Button>
         </div>
 
-        {/* Mobile Menu Button */}
         <button
           onClick={toggleMenu}
           className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          aria-label="Toggle menu"
+          aria-label={t("common.aria.toggleMenu")}
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
-      {/* Mobile Navigation Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-black border-t border-gray-800">
           <div className="px-4 py-4 space-y-4">
-            <Link
-              href="/explore"
-              className={`block text-base font-medium transition-colors ${
-                isActive("/explore")
-                  ? "text-purple-400"
-                  : "text-gray-300 hover:text-white"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Explore
-            </Link>
-            <Link
-              href="/bridge"
-              className={`block text-base font-medium transition-colors ${
-                isActive("/bridge")
-                  ? "text-purple-400"
-                  : "text-gray-300 hover:text-white"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Bridge
-            </Link>
-            <Link
-              href="/create"
-              className={`block text-base font-medium transition-colors ${
-                isActive("/create")
-                  ? "text-purple-400"
-                  : "text-gray-300 hover:text-white"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Create
-            </Link>
-            <Link
-              href="/dashboard"
-              className={`block text-base font-medium transition-colors ${
-                isActive("/dashboard")
-                  ? "text-purple-400"
-                  : "text-gray-300 hover:text-white"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Dashboard
-            </Link>
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`block text-base font-medium transition-colors ${
+                  isActive(item.href)
+                    ? "text-purple-400"
+                    : "text-gray-300 hover:text-white"
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
             <div className="flex justify-center">
               <NotificationCenter />
             </div>
@@ -195,7 +143,7 @@ const Header: React.FC = () => {
               size="md"
               className="w-full justify-center"
             >
-              Connect Wallet
+              {t("common.actions.connectWallet")}
             </Button>
           </div>
         </div>

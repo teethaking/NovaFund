@@ -1,6 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  formatCurrency,
+  formatDate,
+  formatNumber,
+  formatSignedCurrency,
+} from "@/lib/formatters";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 
@@ -25,6 +32,8 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
   onClaim,
 }) => {
   const [claimingIds, setClaimingIds] = useState<Set<string>>(new Set());
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage;
 
   const handleClaim = async (investment: Investment) => {
     if (claimingIds.has(investment.id)) return;
@@ -44,27 +53,19 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
   const getStatusBadge = (status: Investment["status"]) => {
     switch (status) {
       case "active":
-        return <Badge variant="primary">Active</Badge>;
+        return <Badge variant="primary">{t("common.status.active")}</Badge>;
       case "completed":
-        return <Badge variant="success">Completed</Badge>;
+        return <Badge variant="success">{t("common.status.completed")}</Badge>;
       case "failed":
-        return <Badge variant="danger">Failed</Badge>;
+        return <Badge variant="danger">{t("common.status.failed")}</Badge>;
       default:
-        return <Badge variant="secondary">Unknown</Badge>;
+        return <Badge variant="secondary">{t("common.status.unknown")}</Badge>;
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
   };
 
   const calculateGainLoss = (currentValue: number, invested: number) => {
     const gain = currentValue - invested;
-    const percentage = ((gain / invested) * 100).toFixed(1);
+    const percentage = invested > 0 ? (gain / invested) * 100 : 0;
     return {
       amount: gain,
       percentage,
@@ -72,12 +73,20 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
     };
   };
 
+  const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
+  const totalClaimable = investments.reduce(
+    (sum, inv) => sum + inv.claimableReturns,
+    0,
+  );
+
   return (
     <div className="overflow-hidden w-full">
       <div className="px-6 py-4 border-b border-white/10">
-        <h2 className="text-xl font-semibold text-white">Your Investments</h2>
+        <h2 className="text-xl font-semibold text-white">
+          {t("dashboard.table.title")}
+        </h2>
         <p className="text-sm text-white/50 mt-1">
-          Manage your portfolio and claim available returns
+          {t("dashboard.table.description")}
         </p>
       </div>
 
@@ -92,38 +101,63 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
 
             return (
               <div key={investment.id} className="p-4 space-y-3">
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start gap-4">
                   <div>
                     <div className="font-medium text-white">
                       {investment.projectName}
                     </div>
                     <div className="text-sm text-white/50">
-                      Invested {formatDate(investment.dateInvested)}
+                      {t("dashboard.table.investedOn", {
+                        date: formatDate(investment.dateInvested, language),
+                      })}
                     </div>
                   </div>
                   {getStatusBadge(investment.status)}
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <div className="text-white/50">Invested</div>
-                    <div className="font-medium text-white">${investment.amount.toLocaleString()}</div>
-                  </div>
-                  <div>
-                    <div className="text-white/50">Current Value</div>
-                    <div className="font-medium text-white">${investment.currentValue.toLocaleString()}</div>
-                  </div>
-                  <div>
-                    <div className="text-white/50">Gain/Loss</div>
-                    <div className={gainLoss.isPositive ? "text-green-400" : "text-red-400"}>
-                      {gainLoss.isPositive ? "+" : ""}${gainLoss.amount.toLocaleString()}
-                      <div className="text-xs">({gainLoss.isPositive ? "+" : ""}{gainLoss.percentage}%)</div>
+                    <div className="text-white/50">
+                      {t("dashboard.table.columns.invested")}
+                    </div>
+                    <div className="font-medium text-white">
+                      {formatCurrency(investment.amount, language)}
                     </div>
                   </div>
                   <div>
-                    <div className="text-white/50">Claimable</div>
+                    <div className="text-white/50">
+                      {t("dashboard.table.columns.currentValue")}
+                    </div>
+                    <div className="font-medium text-white">
+                      {formatCurrency(investment.currentValue, language)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-white/50">
+                      {t("dashboard.table.columns.gainLoss")}
+                    </div>
+                    <div
+                      className={
+                        gainLoss.isPositive ? "text-green-400" : "text-red-400"
+                      }
+                    >
+                      {formatSignedCurrency(gainLoss.amount, language)}
+                      <div className="text-xs">
+                        ({gainLoss.isPositive ? "+" : ""}
+                        {formatNumber(Math.abs(gainLoss.percentage), language, {
+                          minimumFractionDigits: 1,
+                          maximumFractionDigits: 1,
+                        })}
+                        %)
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-white/50">
+                      {t("dashboard.table.columns.claimable")}
+                    </div>
                     <div className="text-purple-400 font-medium">
-                      ${investment.claimableReturns.toLocaleString()}
+                      {formatCurrency(investment.claimableReturns, language)}
                     </div>
                   </div>
                 </div>
@@ -157,10 +191,10 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           ></path>
                         </svg>
-                        Claiming
+                        {t("dashboard.table.actions.claiming")}
                       </div>
                     ) : (
-                      "Claim Returns"
+                      t("dashboard.table.actions.claimReturns")
                     )}
                   </Button>
                 )}
@@ -174,26 +208,26 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
         <table className="w-full">
           <thead className="bg-white/5">
             <tr>
-               <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                Project
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                {t("dashboard.table.columns.project")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                Invested
+                {t("dashboard.table.columns.invested")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                Current Value
+                {t("dashboard.table.columns.currentValue")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                Gain/Loss
+                {t("dashboard.table.columns.gainLoss")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                Claimable
+                {t("dashboard.table.columns.claimable")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                Status
+                {t("dashboard.table.columns.status")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                Actions
+                {t("dashboard.table.columns.actions")}
               </th>
             </tr>
           </thead>
@@ -216,15 +250,17 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
                         {investment.projectName}
                       </div>
                       <div className="text-sm text-white/50">
-                        Invested {formatDate(investment.dateInvested)}
+                        {t("dashboard.table.investedOn", {
+                          date: formatDate(investment.dateInvested, language),
+                        })}
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm">
-                    ${investment.amount.toLocaleString()}
+                    {formatCurrency(investment.amount, language)}
                   </td>
                   <td className="px-6 py-4 text-sm">
-                    ${investment.currentValue.toLocaleString()}
+                    {formatCurrency(investment.currentValue, language)}
                   </td>
                   <td className="px-6 py-4 text-sm">
                     <div
@@ -232,17 +268,20 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
                         gainLoss.isPositive ? "text-green-400" : "text-red-400"
                       }
                     >
-                      {gainLoss.isPositive ? "+" : ""}$
-                      {gainLoss.amount.toLocaleString()}
+                      {formatSignedCurrency(gainLoss.amount, language)}
                       <div className="text-xs">
                         ({gainLoss.isPositive ? "+" : ""}
-                        {gainLoss.percentage}%)
+                        {formatNumber(Math.abs(gainLoss.percentage), language, {
+                          minimumFractionDigits: 1,
+                          maximumFractionDigits: 1,
+                        })}
+                        %)
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm">
                     <div className="text-purple-400 font-medium">
-                      ${investment.claimableReturns.toLocaleString()}
+                      {formatCurrency(investment.claimableReturns, language)}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -278,17 +317,17 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                               ></path>
                             </svg>
-                            Claiming
+                            {t("dashboard.table.actions.claiming")}
                           </div>
                         ) : (
-                          "Claim"
+                          t("dashboard.table.actions.claim")
                         )}
                       </Button>
                     ) : (
                       <span className="text-sm text-white/50">
                         {investment.claimableReturns === 0
-                          ? "No returns"
-                          : "Not ready"}
+                          ? t("dashboard.table.fallbacks.noReturns")
+                          : t("dashboard.table.fallbacks.notReady")}
                       </span>
                     )}
                   </td>
@@ -300,27 +339,24 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({
       </div>
 
       <div className="px-6 py-4 bg-white/5 border-t border-white/10">
-        <div className="flex justify-between items-center text-sm text-white">
+        <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center text-sm text-white">
           <span className="text-white/60">
-            Total Investments: {investments.length}
+            {t("dashboard.table.footer.totalInvestments", {
+              count: investments.length,
+              formattedCount: formatNumber(investments.length, language),
+            })}
           </span>
-          <div className="flex space-x-6">
+          <div className="flex flex-col gap-2 md:flex-row md:space-x-6 md:gap-0">
             <span>
-              Total Invested:{" "}
+              {t("dashboard.table.footer.totalInvested")} {" "}
               <span className="font-medium">
-                $
-                {investments
-                  .reduce((sum, inv) => sum + inv.amount, 0)
-                  .toLocaleString()}
+                {formatCurrency(totalInvested, language)}
               </span>
             </span>
             <span>
-              Total Claimable:{" "}
+              {t("dashboard.table.footer.totalClaimable")} {" "}
               <span className="font-medium text-purple-400">
-                $
-                {investments
-                  .reduce((sum, inv) => sum + inv.claimableReturns, 0)
-                  .toLocaleString()}
+                {formatCurrency(totalClaimable, language)}
               </span>
             </span>
           </div>

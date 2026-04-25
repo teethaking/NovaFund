@@ -21,7 +21,9 @@
     "@stellar/stellar-sdk": "^11.3.0",
     "react": "^18",
     "react-dom": "^18",
-    "tailwind-merge": "^2.6.1"
+    "tailwind-merge": "^2.6.1",
+    "i18next": "^25.1.3",
+    "react-i18next": "^15.7.0"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -1,0 +1,191 @@
+{
+  "common": {
+    "language": {
+      "options": {
+        "en": "English",
+        "es": "Español",
+        "fr": "Français"
+      }
+    },
+    "nav": {
+      "explore": "Explore",
+      "bridge": "Bridge",
+      "create": "Create",
+      "dashboard": "Dashboard",
+      "myProfile": "My Profile"
+    },
+    "actions": {
+      "connectWallet": "Connect Wallet",
+      "exploreProjects": "Explore Projects",
+      "exploreAllProjects": "Explore All Projects"
+    },
+    "aria": {
+      "toggleMenu": "Toggle menu"
+    },
+    "projectCategories": {
+      "tech": "Tech",
+      "art": "Art",
+      "greenEnergy": "Green Energy",
+      "ux": "UX"
+    },
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "failed": "Failed",
+      "unknown": "Unknown"
+    }
+  },
+  "footer": {
+    "description": "Decentralized micro-investment platform on Stellar.",
+    "languageSelectorLabel": "Language",
+    "sections": {
+      "platform": "Platform",
+      "resources": "Resources",
+      "legal": "Legal"
+    },
+    "links": {
+      "createProject": "Create Project",
+      "documentation": "Documentation",
+      "blog": "Blog",
+      "helpCenter": "Help Center",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "cookies": "Cookies"
+    },
+    "copyright": "© 2026 NovaFund. All rights reserved."
+  },
+  "landing": {
+    "hero": {
+      "badge": "Decentralized Micro-Investment",
+      "headingStart": "Fund the Future",
+      "headingHighlight": "Together",
+      "description": "NovaFund is a decentralized platform where communities invest in innovative projects through micro-transactions on Stellar. Join a new era of democratized funding.",
+      "cta": {
+        "bridgeUsdc": "Bridge USDC",
+        "launchProject": "Launch Project"
+      },
+      "stats": {
+        "activeProjects": "Active Projects",
+        "communityMembers": "Community Members",
+        "totalFunded": "Total Funded"
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Three simple steps to become part of the investment revolution",
+      "readyText": "Ready to start your investment journey?",
+      "steps": {
+        "discoverConnect": {
+          "title": "Discover & Connect",
+          "description": "Explore innovative projects from creators worldwide. Filter by category, funding stage, or impact area to find opportunities aligned with your vision."
+        },
+        "investCollaborate": {
+          "title": "Invest & Collaborate",
+          "description": "Contribute micro-investments starting at just $1. Join communities of backers, participate in decision-making, and support projects you believe in."
+        },
+        "trackEarnRewards": {
+          "title": "Track & Earn Rewards",
+          "description": "Monitor your portfolio in real time. Earn reputation points, gain voting rights, and receive rewards as projects succeed on the Stellar blockchain."
+        }
+      }
+    },
+    "featuredProjects": {
+      "title": "Featured Projects",
+      "description": "Discover groundbreaking projects that are reshaping industries and creating positive impact around the world.",
+      "projects": {
+        "solarGridMeshNetwork": {
+          "title": "SolarGrid Mesh Network",
+          "description": "P2P energy sharing platform utilizing smart meters and Stellar micro-payments."
+        },
+        "quantumLedgerExplorer": {
+          "title": "Quantum Ledger Explorer",
+          "description": "A next-generation blockchain explorer for high-frequency trading networks on Stellar."
+        },
+        "neonDreamsVrArtGallery": {
+          "title": "Neon Dreams: VR Art Gallery",
+          "description": "An immersive virtual reality space for digital artists to showcase and sell NFT-backed art."
+        }
+      },
+      "cta": {
+        "title": "Ready to invest in innovation?",
+        "body": "Join thousands of community members funding the future. Start with as little as $1 and become part of the investment revolution.",
+        "button": "Go to Dashboard"
+      }
+    }
+  },
+  "projectCard": {
+    "progressOf": "{{percent}}% of {{goal}}",
+    "backers_one": "{{formattedCount}} backer",
+    "backers_other": "{{formattedCount}} backers",
+    "daysLeft_one": "{{formattedCount}} day left",
+    "daysLeft_other": "{{formattedCount}} days left"
+  },
+  "dashboard": {
+    "badge": "Investor Dashboard",
+    "titlePrimary": "Portfolio",
+    "titleSecondary": "Overview",
+    "description": "Track your investments, monitor returns, and manage your portfolio with real-time insights.",
+    "exploreMoreProjects": "Explore More Projects",
+    "toasts": {
+      "claimSuccess": "Successfully claimed {{amount}}!",
+      "claimError": "Failed to claim returns. Please try again."
+    },
+    "notifications": {
+      "returnsClaimedTitle": "Returns claimed",
+      "returnsClaimedMessage": "Successfully claimed {{amount}} from your investment."
+    },
+    "emptyState": {
+      "title": "No Investments Yet",
+      "body": "Start building your portfolio by exploring and investing in impactful projects.",
+      "button": "Explore Projects"
+    },
+    "stats": {
+      "totalInvested": "Total Invested",
+      "acrossAllProjects": "Across all projects",
+      "currentValue": "Current Value",
+      "gainDescription": "{{percent}}% gain",
+      "lossDescription": "{{percent}}% loss",
+      "claimableReturns": "Claimable Returns",
+      "readyToClaim": "Ready to claim",
+      "activeProjects": "Active Projects",
+      "inPortfolio": "In portfolio"
+    },
+    "table": {
+      "title": "Your Investments",
+      "description": "Manage your portfolio and claim available returns",
+      "investedOn": "Invested {{date}}",
+      "columns": {
+        "project": "Project",
+        "invested": "Invested",
+        "currentValue": "Current Value",
+        "gainLoss": "Gain/Loss",
+        "claimable": "Claimable",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "actions": {
+        "claim": "Claim",
+        "claimReturns": "Claim Returns",
+        "claiming": "Claiming"
+      },
+      "fallbacks": {
+        "noReturns": "No returns",
+        "notReady": "Not ready"
+      },
+      "footer": {
+        "totalInvestments": "Total Investments: {{formattedCount}}",
+        "totalInvested": "Total Invested:",
+        "totalClaimable": "Total Claimable:"
+      }
+    },
+    "chart": {
+      "title": "Portfolio Allocation"
+    },
+    "projects": {
+      "solarPanelInitiative": "Solar Panel Initiative",
+      "urbanFarmingProject": "Urban Farming Project",
+      "cleanWaterAccess": "Clean Water Access",
+      "educationTechnology": "Education Technology"
+    }
+  }
+}

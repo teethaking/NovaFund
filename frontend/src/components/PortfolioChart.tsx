@@ -1,4 +1,8 @@
+"use client";
+
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { formatCurrency, formatNumber } from "@/lib/formatters";
 
 interface Investment {
   id: string;
@@ -13,14 +17,16 @@ interface PortfolioChartProps {
 }
 
 const PortfolioChart: React.FC<PortfolioChartProps> = ({ investments }) => {
+  const { t, i18n } = useTranslation();
   const totalValue = investments.reduce(
     (sum, inv) => sum + inv.currentValue,
     0,
   );
+  const language = i18n.resolvedLanguage;
 
   const chartData = investments.map((inv) => ({
     ...inv,
-    percentage: ((inv.currentValue / totalValue) * 100).toFixed(1),
+    percentage: totalValue > 0 ? (inv.currentValue / totalValue) * 100 : 0,
   }));
 
   const colors = [
@@ -36,12 +42,16 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({ investments }) => {
 
   return (
     <div className="w-full">
-      <h3 className="text-xl font-semibold mb-6 text-white">Portfolio Allocation</h3>
+      <h3 className="text-xl font-semibold mb-6 text-white">
+        {t("dashboard.chart.title")}
+      </h3>
 
-      {/* Simple Bar Chart */}
       <div className="space-y-4">
         {chartData.map((item, index) => (
-          <div key={item.id} className="flex items-center group cursor-pointer p-2 hover:bg-white/5 rounded-lg transition-colors -mx-2">
+          <div
+            key={item.id}
+            className="flex items-center group cursor-pointer p-2 hover:bg-white/5 rounded-lg transition-colors -mx-2"
+          >
             <div className="w-24 text-sm text-white/50 truncate group-hover:text-white transition-colors">
               {item.projectName}
             </div>
@@ -53,15 +63,20 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({ investments }) => {
                 />
               </div>
             </div>
-            <div className="w-16 text-sm text-right text-white font-medium">{item.percentage}%</div>
+            <div className="w-16 text-sm text-right text-white font-medium">
+              {formatNumber(item.percentage, language, {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              })}
+              %
+            </div>
             <div className="w-20 text-sm text-right text-white/40">
-              ${item.currentValue.toLocaleString()}
+              {formatCurrency(item.currentValue, language)}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Legend */}
       <div className="mt-8 pt-6 border-t border-white/10">
         <div className="grid grid-cols-2 gap-3 text-xs text-white/60">
           {chartData.slice(0, 6).map((item, index) => (

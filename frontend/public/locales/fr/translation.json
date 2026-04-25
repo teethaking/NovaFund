@@ -1,0 +1,191 @@
+{
+  "common": {
+    "language": {
+      "options": {
+        "en": "English",
+        "es": "Español",
+        "fr": "Français"
+      }
+    },
+    "nav": {
+      "explore": "Explorer",
+      "bridge": "Passerelle",
+      "create": "Créer",
+      "dashboard": "Tableau de bord",
+      "myProfile": "Mon profil"
+    },
+    "actions": {
+      "connectWallet": "Connecter le wallet",
+      "exploreProjects": "Explorer les projets",
+      "exploreAllProjects": "Explorer tous les projets"
+    },
+    "aria": {
+      "toggleMenu": "Ouvrir ou fermer le menu"
+    },
+    "projectCategories": {
+      "tech": "Tech",
+      "art": "Art",
+      "greenEnergy": "Énergie verte",
+      "ux": "UX"
+    },
+    "status": {
+      "active": "Actif",
+      "completed": "Terminé",
+      "failed": "Échoué",
+      "unknown": "Inconnu"
+    }
+  },
+  "footer": {
+    "description": "Plateforme décentralisée de micro-investissement sur Stellar.",
+    "languageSelectorLabel": "Langue",
+    "sections": {
+      "platform": "Plateforme",
+      "resources": "Ressources",
+      "legal": "Mentions légales"
+    },
+    "links": {
+      "createProject": "Créer un projet",
+      "documentation": "Documentation",
+      "blog": "Blog",
+      "helpCenter": "Centre d'aide",
+      "terms": "Conditions",
+      "privacy": "Confidentialité",
+      "cookies": "Cookies"
+    },
+    "copyright": "© 2026 NovaFund. Tous droits réservés."
+  },
+  "landing": {
+    "hero": {
+      "badge": "Micro-investissement décentralisé",
+      "headingStart": "Financez le futur",
+      "headingHighlight": "ensemble",
+      "description": "NovaFund est une plateforme décentralisée où les communautés investissent dans des projets innovants via des micro-transactions sur Stellar. Rejoignez une nouvelle ère de financement démocratisé.",
+      "cta": {
+        "bridgeUsdc": "Transférer des USDC",
+        "launchProject": "Lancer un projet"
+      },
+      "stats": {
+        "activeProjects": "Projets actifs",
+        "communityMembers": "Membres de la communauté",
+        "totalFunded": "Total financé"
+      }
+    },
+    "howItWorks": {
+      "title": "Comment ça marche",
+      "subtitle": "Trois étapes simples pour participer à la révolution de l'investissement",
+      "readyText": "Prêt à commencer votre parcours d’investissement ?",
+      "steps": {
+        "discoverConnect": {
+          "title": "Découvrir et se connecter",
+          "description": "Explorez des projets innovants créés partout dans le monde. Filtrez par catégorie, phase de financement ou domaine d’impact pour trouver des opportunités alignées avec votre vision."
+        },
+        "investCollaborate": {
+          "title": "Investir et collaborer",
+          "description": "Contribuez à partir de seulement 1 $. Rejoignez des communautés de soutiens, participez à la prise de décision et soutenez les projets auxquels vous croyez."
+        },
+        "trackEarnRewards": {
+          "title": "Suivre et gagner des récompenses",
+          "description": "Suivez votre portefeuille en temps réel. Gagnez des points de réputation, obtenez des droits de vote et recevez des récompenses à mesure que les projets réussissent sur la blockchain Stellar."
+        }
+      }
+    },
+    "featuredProjects": {
+      "title": "Projets en vedette",
+      "description": "Découvrez des projets audacieux qui transforment des secteurs entiers et créent un impact positif dans le monde entier.",
+      "projects": {
+        "solarGridMeshNetwork": {
+          "title": "Réseau maillé SolarGrid",
+          "description": "Plateforme pair à pair de partage d’énergie utilisant des compteurs intelligents et des micro-paiements sur Stellar."
+        },
+        "quantumLedgerExplorer": {
+          "title": "Explorateur Quantum Ledger",
+          "description": "Un explorateur blockchain de nouvelle génération pour les réseaux de trading haute fréquence sur Stellar."
+        },
+        "neonDreamsVrArtGallery": {
+          "title": "Neon Dreams : galerie d’art VR",
+          "description": "Un espace immersif en réalité virtuelle permettant aux artistes numériques d’exposer et de vendre des œuvres adossées à des NFT."
+        }
+      },
+      "cta": {
+        "title": "Prêt à investir dans l’innovation ?",
+        "body": "Rejoignez des milliers de membres de la communauté qui financent le futur. Commencez avec seulement 1 $ et participez à la révolution de l’investissement.",
+        "button": "Aller au tableau de bord"
+      }
+    }
+  },
+  "projectCard": {
+    "progressOf": "{{percent}} % de {{goal}}",
+    "backers_one": "{{formattedCount}} soutien",
+    "backers_other": "{{formattedCount}} soutiens",
+    "daysLeft_one": "{{formattedCount}} jour restant",
+    "daysLeft_other": "{{formattedCount}} jours restants"
+  },
+  "dashboard": {
+    "badge": "Tableau de bord investisseur",
+    "titlePrimary": "Vue",
+    "titleSecondary": "du portefeuille",
+    "description": "Suivez vos investissements, surveillez les rendements et gérez votre portefeuille grâce à des données en temps réel.",
+    "exploreMoreProjects": "Explorer plus de projets",
+    "toasts": {
+      "claimSuccess": "{{amount}} réclamés avec succès.",
+      "claimError": "Impossible de réclamer les rendements. Veuillez réessayer."
+    },
+    "notifications": {
+      "returnsClaimedTitle": "Rendements réclamés",
+      "returnsClaimedMessage": "Vous avez réclamé {{amount}} depuis votre investissement."
+    },
+    "emptyState": {
+      "title": "Aucun investissement pour le moment",
+      "body": "Commencez à construire votre portefeuille en explorant et en finançant des projets à impact.",
+      "button": "Explorer les projets"
+    },
+    "stats": {
+      "totalInvested": "Total investi",
+      "acrossAllProjects": "Sur l’ensemble des projets",
+      "currentValue": "Valeur actuelle",
+      "gainDescription": "{{percent}} % de gain",
+      "lossDescription": "{{percent}} % de perte",
+      "claimableReturns": "Rendements disponibles",
+      "readyToClaim": "Prêts à être réclamés",
+      "activeProjects": "Projets actifs",
+      "inPortfolio": "Dans le portefeuille"
+    },
+    "table": {
+      "title": "Vos investissements",
+      "description": "Gérez votre portefeuille et réclamez les rendements disponibles",
+      "investedOn": "Investi le {{date}}",
+      "columns": {
+        "project": "Projet",
+        "invested": "Investi",
+        "currentValue": "Valeur actuelle",
+        "gainLoss": "Gain/Perte",
+        "claimable": "Réclamable",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "actions": {
+        "claim": "Réclamer",
+        "claimReturns": "Réclamer les rendements",
+        "claiming": "Réclamation..."
+      },
+      "fallbacks": {
+        "noReturns": "Aucun rendement",
+        "notReady": "Pas encore prêt"
+      },
+      "footer": {
+        "totalInvestments": "Total des investissements : {{formattedCount}}",
+        "totalInvested": "Total investi :",
+        "totalClaimable": "Total réclamable :"
+      }
+    },
+    "chart": {
+      "title": "Répartition du portefeuille"
+    },
+    "projects": {
+      "solarPanelInitiative": "Initiative panneaux solaires",
+      "urbanFarmingProject": "Projet d’agriculture urbaine",
+      "cleanWaterAccess": "Accès à l’eau potable",
+      "educationTechnology": "Technologie éducative"
+    }
+  }
+}
